@@ -1,5 +1,5 @@
 library(igraph)
-library(igraphdata)
+library(sand)
 
 data(Ecoli.data)
 g=graph.adjacency(regDB.adj)

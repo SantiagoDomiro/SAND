@@ -33,6 +33,7 @@ g.tree <- graph.formula(1-+2,1-+3,1-+4,2-+5,2-+6,2-+7,3-+8,3-+9,4-+10)
 igraph.options(vertex.size=30, edge.arrow.size=0.5,vertex.label=NULL)
 par(mfrow=c(1, 3))
 plot(g.tree, layout=layout.circle)
+#radial
 plot(g.tree, layout=layout.reingold.tilford(g.tree,circular=T))
 #circular: whether to plot the tree in a circular fashion
 plot(g.tree, layout=layout.reingold.tilford)
@@ -65,6 +66,7 @@ V(karate)[Faction == 1]$color <- "red"
 V(karate)[Faction == 2]$color <- "dodgerblue"
 # Vertex area proportional to vertex strength
 V(karate)$size <- 4*sqrt(graph.strength(karate))
+#graph.strength:sum up edge weights of the adjacent edges for each vertex
 V(karate)$size2 <- V(karate)$size * .5
 # Weight edges by number of common activities
 E(karate)$width <- E(karate)$weight
