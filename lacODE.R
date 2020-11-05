@@ -27,7 +27,20 @@ dev.off()
 
 #phase plane
 png("Downloads/phase.png")
- plane(state=s[1,],parms=p,odes=model,legend=T,xmax=2)
- abline(v=0.5,lty=2)
- abline(h=1.0368,lty=2)
+ plane(state=s[1,],parms=p,odes=model,legend=T,xmin=-0.5,ymin=-0.5,xmax=3,ymax=1.5,vector=T)# find steady states
+ low <- newton(s[1,],plot=T)#s[1,]=0.0000000 0.0000000
+ #         A          M 
+ #0.22721312 0.05060519 
+ #Stable point, eigenvalues:  -1.015041 -0.2053624 
+ mid <- newton(s[4,],plot=T)#s[4,]=1.0000000 1.0000000
+ #        A         M 
+ #0.6907057 0.1858486 
+ #Unstable point, eigenvalues:  -1.504184 0.2528436  
+ high <- newton(s[5,],plot=T)#s[5,]=4.0000000 0.0000000
+ #      A       M 
+ #2.37172 1.03685 
+ #Stable point, eigenvalues:  -1.01765 -0.2908533 
 dev.off()
+
+
+continue(mid,x="L",y="A",xmax=2,ymax=4)
