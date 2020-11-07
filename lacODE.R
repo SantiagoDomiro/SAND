@@ -27,7 +27,8 @@ dev.off()
 
 #phase plane
 png("Downloads/phase.png")
- plane(state=s[1,],parms=p,odes=model,legend=T,xmin=-0.5,ymin=-0.5,xmax=3,ymax=1.5,vector=T)# find steady states
+ plane(state=s[1,],parms=p,odes=model,legend=T,xmax=3,ymax=1.2,
+  vector=T,grid=14)# find steady states
  low <- newton(s[1,],plot=T)#s[1,]=0.0000000 0.0000000
  #         A          M 
  #0.22721312 0.05060519 
@@ -42,5 +43,25 @@ png("Downloads/phase.png")
  #Stable point, eigenvalues:  -1.01765 -0.2908533 
 dev.off()
 
+#################varying suggested parameter
+p["L"]<-0.5
+png("Downloads/phaseAlt.png")
+plane(state=s[1,],parms=p,odes=model,legend=T,xmax=3,ymax=1.2,
+ vector=T,grid=14,main="L = 0.5")# find steady states
+low <- newton(s[1,],plot=T)#s[1,]=0.0000000 0.0000000
+#         A          M 
+#0.11180350 0.05001747 
+#Stable point, eigenvalues:  -1.000449 -0.2219819 
+mid <- newton(s[4,],plot=T)#s[4,]=1.0000000 1.0000000
+#         A          M 
+#0.11180350 0.05001747 
+#Stable point, eigenvalues:  -1.000449 -0.2219819 
+high <- newton(s[5,],plot=T)#s[5,]=4.0000000 0.0000000
+#         A          M 
+#-0.6893587 -0.1343818 #those value make no sense
+#Unstable point, eigenvalues:  -1.8833 0.8397599 
+dev.off()
 
-continue(mid,x="L",y="A",xmax=2,ymax=4)
+png("Downloads/bifurcationM.png")
+continue(state=s[1,],parms=p,odes=model,x="L",y="M",xmax=2,ymax=1.3,color="black")
+dev.off()
