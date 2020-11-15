@@ -27,16 +27,16 @@ dev.off()
 
 #add noise on L concentration
 png("Downloads/time+noise.png")
-par(mfrow=c(2,2))
-sapply(seq(0.5,2,0.5),function(l) {
+par(mfrow=c(2,3))
+sapply(c(1,4),function(i) sapply(c(0.5,1,2),function(l) {
 	p["L"]=l;
-	run(tmax=40,tstep=1,odes=model,state=s[4,],parms=p,
-		after="parms[\"c\"]<-rnorm(1,mean=1,sd=0.2)",
-		main=paste("L =",p["L"]))})
+	run(tmax=40,tstep=1,odes=model,state=s[i,],parms=p,
+		after="parms[\"c\"]<-rnorm(1,mean=1,sd=0.5)",
+		main=paste("L =",p["L"]),
+		show="M");
+#	abline(h=run(state=s[i,],parms=p,timeplot=F)["M"],col="yellow");
+	abline(h=run(state=s[i,],parms=p,timeplot=F)["M"],col="red")}))
 dev.off()
-#        [,1]     [,2]     [,3]     [,4]
-#A 0.11213256 2.444345 4.197148 6.552934
-#M 0.05001575 1.210919 0.969043 1.031852
 
 #phase plane
 png("Downloads/phase.png")
@@ -77,8 +77,13 @@ dev.off()
 
 png("Downloads/bifurcationM.png")
 continue(state=s[1,],parms=p,odes=model,x="L",y="M",
-	xmax=2,ymax=1.3,color="black")
+	xmax=2,ymax=1.3)
 dev.off()
+#Starting at L = 1 with:
+#         A          M 
+#0.22721312 0.05060519 
+#Turning point point at L = 1.510469 
+#Turning point point at L = 0.6846875 
 
 ######################################check repressor function
 repre<-function(A,n){1/(1+A^n)}
