@@ -150,3 +150,50 @@ continue(state=s,parms=p,odes=modelAlt,x="L",y="M")
 #Turning point point at L = 0.6846875 
 dev.off()
 
+#########################include glucose effect
+modelGlu <- function(t, state, parms) {
+   with(as.list(c(state,parms)), { 
+   R = 1/(1+A^n)               # Repressor
+   dM = c0 + c*(1-R)*gluC - d*M     # mRNA
+   dA = M*L*gluP - delta*A - (u*M*A)/(h+A)  # Allolactose
+   return(list(c(dA, dM)))  
+})}
+p <- c(L=3,c=1,d=1,u=1,c0=0.05,h=2,n=5,delta=0.2,gluC=0.8,gluP=0.35)#params
+s <- cbind(A=c(seq(0,1,length=4),4,0),M=c(seq(0,1,length=4),0,4))
+
+png("Downloads/glucosE.png")
+par(mfrow=c(1,2))
+plane(state=s[1,],parms=p,odes=modelGlu,legend=T,vector=T,grid=14,xmax=3)
+newton(state=s[6,],plot=T,odes=modelGlu)
+#         A          M 
+#0.07810720 0.05000233 
+#Stable point, eigenvalues:  -1.00006 -0.2230972 
+newton(state=s[4,],plot=T,odes=modelGlu)
+#        A         M 
+#0.7282288 0.1859918 
+#Unstable point, eigenvalues:  -1.489577 0.2396005
+newton(state=s[5,],plot=T,odes=modelGlu)#M=0,A=4, opposite falls to unstable
+#        A         M 
+#2.1972882 0.8346804 
+#Stable point, eigenvalues:  -1.024664 -0.2700928  
+continue(state=s[4,],parms=p,odes=modelGlu,xmax=7)
+#Starting at L = 1 with:
+#         A          M 
+#0.07810735 0.05000232 
+#Turning point point at L = 4.511484 
+#Turning point point at L = 2.167578 
+abline(v=4.511484,lty=2)
+abline(v=2.167578,lty=2)
+dev.off()
+#run(tmax=40,tstep=1,odes=modelGlu,state=s[4,],parms=p)
+
+modeL <- function(t, state, parms) {
+   with(as.list(c(state,parms)), { 
+   R = 1/(1+A^n)               # Repressor
+   dM = c0 + c*s*(1-R) - d*M     # mRNA
+   dA = M*L*s - delta*A - (u*M*A)/(h+A)  # Allolactose
+   ds=1-A/A+0.1
+   return(list(c(dA, dM, ds)))  
+})}
+
+plane(state=c(A=0,M=0,L=1),parms=p,odes=modeL,legend=T,vector=T,grid=14,xmax=3)
