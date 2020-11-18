@@ -151,49 +151,37 @@ continue(state=s,parms=p,odes=modelAlt,x="L",y="M")
 dev.off()
 
 #########################include glucose effect
-modelGlu <- function(t, state, parms) {
-   with(as.list(c(state,parms)), { 
-   R = 1/(1+A^n)               # Repressor
-   dM = c0 + c*(1-R)*gluC - d*M     # mRNA
-   dA = M*L*gluP - delta*A - (u*M*A)/(h+A)  # Allolactose
-   return(list(c(dA, dM)))  
-})}
-p <- c(L=3,c=1,d=1,u=1,c0=0.05,h=2,n=5,delta=0.2,gluC=0.8,gluP=0.35)#params
-s <- cbind(A=c(seq(0,1,length=4),4,0),M=c(seq(0,1,length=4),0,4))
-
-png("Downloads/glucosE.png")
-par(mfrow=c(1,2))
-plane(state=s[1,],parms=p,odes=modelGlu,legend=T,vector=T,grid=14,xmax=3)
-newton(state=s[6,],plot=T,odes=modelGlu)
-#         A          M 
-#0.07810720 0.05000233 
-#Stable point, eigenvalues:  -1.00006 -0.2230972 
-newton(state=s[4,],plot=T,odes=modelGlu)
-#        A         M 
-#0.7282288 0.1859918 
-#Unstable point, eigenvalues:  -1.489577 0.2396005
-newton(state=s[5,],plot=T,odes=modelGlu)#M=0,A=4, opposite falls to unstable
-#        A         M 
-#2.1972882 0.8346804 
-#Stable point, eigenvalues:  -1.024664 -0.2700928  
-continue(state=s[4,],parms=p,odes=modelGlu,xmax=7)
-#Starting at L = 1 with:
-#         A          M 
-#0.07810735 0.05000232 
-#Turning point point at L = 4.511484 
-#Turning point point at L = 2.167578 
-abline(v=4.511484,lty=2)
-abline(v=2.167578,lty=2)
-dev.off()
-#run(tmax=40,tstep=1,odes=modelGlu,state=s[4,],parms=p)
-
 modeL <- function(t, state, parms) {
    with(as.list(c(state,parms)), { 
    R = 1/(1+A^n)               # Repressor
-   dM = c0 + c*s*(1-R) - d*M     # mRNA
-   dA = M*L*s - delta*A - (u*M*A)/(h+A)  # Allolactose
-   ds=1-A/A+0.1
-   return(list(c(dA, dM, ds)))  
+   dM = c0 + c*(1-R)*1/(1+G*2.5) - d*M     # mRNA
+   dA = M*L*1/(1+G) - delta*A - (u*M*A)/(h+A)  # Allolactose
+   return(list(c(dA, dM)))  
 })}
-
-plane(state=c(A=0,M=0,L=1),parms=p,odes=modeL,legend=T,vector=T,grid=14,xmax=3)
+p <- c(p,G=0.1)
+png("Downloads/glucosE.png",width=800)
+par(mfrow=c(1,3))
+continue(state=c(A=0.1,M=0.1),parms=p,odes=modeL,xmax=4,main=paste("G=",p["G"]))
+#         A          M 
+#0.20515445 0.05027945 
+#Turning point point at L = 1.750625 
+#Turning point point at L = 0.8503125
+abline(v=0.8503125,lty=2) 
+abline(v=1.750625,lty=2) 
+p["G"]=0.5
+continue(state=c(A=0.1,M=0.1),parms=p,odes=modeL,xmax=4,main=paste("G=",p["G"]))
+#         A          M 
+#0.14938065 0.05002975 
+#Turning point point at L = 2.7225 
+#Turning point point at L = 1.634687 
+abline(v=1.634687,lty=2) 
+abline(v=2.7225,lty=2) 
+p["G"]=0.8
+continue(state=c(A=0.1,M=0.1),parms=p,odes=modeL,xmax=4,main=paste("G=",p["G"]))
+#         A          M 
+#0.12428369 0.05000869 
+#Turning point point at L = 3.478438 
+#Turning point point at L = 2.335937 
+abline(v=2.335937,lty=2) 
+abline(v=3.478438,lty=2) 
+dev.off()
