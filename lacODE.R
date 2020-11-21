@@ -158,30 +158,31 @@ modeL <- function(t, state, parms) {
    dA = M*L*1/(1+G) - delta*A - (u*M*A)/(h+A)  # Allolactose
    return(list(c(dA, dM)))  
 })}
-p <- c(p,G=0.1)
+p <- c(p,G=0)
 png("Downloads/glucosE.png",width=800)
 par(mfrow=c(1,3))
-continue(state=c(A=0.1,M=0.1),parms=p,odes=modeL,xmax=4,main=paste("G=",p["G"]))
+continue(state=c(A=0,M=0),parms=p,odes=modeL,xmax=5,main=paste("G=",p["G"],", L=",p["L"]))
 #         A          M 
-#0.20515445 0.05027945 
-#Turning point point at L = 1.750625 
-#Turning point point at L = 0.8503125
-abline(v=0.8503125,lty=2) 
-abline(v=1.750625,lty=2) 
-p["G"]=0.5
-continue(state=c(A=0.1,M=0.1),parms=p,odes=modeL,xmax=4,main=paste("G=",p["G"]))
+#0.22721313 0.05060521 
+#Turning point point at L = 1.510313 
+#Turning point point at L = 0.6846875
+abline(v=0.6846875,lty=2) 
+abline(v=1.510313,lty=2) 
+p["G"]=p["L"]=0.5
+continue(state=c(A=0,M=0),parms=p,odes=modeL,xmax=5,main=paste("G=",p["G"],", L=",p["L"]))
 #         A          M 
-#0.14938065 0.05002975 
-#Turning point point at L = 2.7225 
-#Turning point point at L = 1.634687 
-abline(v=1.634687,lty=2) 
-abline(v=2.7225,lty=2) 
-p["G"]=0.8
-continue(state=c(A=0.1,M=0.1),parms=p,odes=modeL,xmax=4,main=paste("G=",p["G"]))
+#0.07437138 0.05000100 
+#Turning point point at L = 2.665 
+#Turning point point at L = 1.541875 
+abline(v=1.541875,lty=2) 
+abline(v=2.665,lty=2) 
+p["G"]=1
+p["L"]=0.0001
+continue(state=c(A=0,M=0),parms=p,odes=modeL,xmax=5,main=paste("G=",p["G"],", L=",p["L"]))
 #         A          M 
-#0.12428369 0.05000869 
-#Turning point point at L = 3.478438 
-#Turning point point at L = 2.335937 
-abline(v=2.335937,lty=2) 
-abline(v=3.478438,lty=2) 
+#1.111112e-05 5.000000e-02 
+#Turning point point at L = 3.888225 
+#Turning point point at L = 2.639162 
+abline(v=2.639162,lty=2) 
+abline(v=3.888225,lty=2) 
 dev.off()
