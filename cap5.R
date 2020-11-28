@@ -140,3 +140,65 @@ transitivity(g.ba)#low transitivity
 #with the average path length following l ~ loglogN
 #Barabási–Albert model does not have an inherent modularity,
 # so C(k) is independent of k 
+
+########################### Comunnities significance
+# data(karate)
+nv <- vcount(karate)
+ne <- ecount(karate)
+degs <- degree(karate)
+ntrials <- 1000
+#random graphs with the same vcount & ecount
+cl_distri_rnd <- sapply(1:ntrials,function(x) {
+ g.rg <- sample_gnm(nv, ne)
+ c.rg <- cluster_fast_greedy(g.rg)
+return(length(c.rg))})
+#random with the same degree distri
+cl_distri_d <- sapply(1:ntrials,function(x) {
+ g.grg <- sample_degseq(degs, method="vl")
+ c.grg <- cluster_fast_greedy(g.grg)
+return(length(c.grg))})
+#get distri of communities in random graphs
+rslts <- c(cl_distri_rnd,cl_distri_d)
+indx <- c(rep(0, ntrials), rep(1, ntrials))
+counts <- table(indx, rslts)/ntrials
+barplot(counts, beside=TRUE, col=c("blue", "red"),
+ xlab="Number of Communities",
+ ylab="Relative Frequency",
+ legend=c("Fixed Size", "Fixed Degree Sequence"))
+
+############################am I smallW????????
+library(igraphdata)
+data(macaque)
+#implement cc for directed nets p.82
+clust_coef_dir <- function(graph) {
+   A <- as.matrix(as_adjacency_matrix(graph))
+   S <- A + t(A)
+   deg <- degree(graph, mode=c("total"))
+   num <- diag(S %*% S %*% S)
+   denom <- diag(A %*% A)
+   denom <- 2 * (deg * (deg - 1) - 2 * denom)
+   cl <- mean(num/denom)
+return(cl)}
+
+#cc from random similar graphs
+nv <- vcount(macaque)
+ne <- ecount(macaque)
+rnd_propes <- t(sapply(1:ntrials,function(x) {
+ g.rg <- sample_gnm(nv, ne, directed=TRUE)
+return(cbind(clust_coef_dir(g.rg),mean_distance(g.rg)))}))
+summary(rnd_propes)
+#       V1               V2       
+# Min.   :0.2169   Min.   :1.808  
+# 1st Qu.:0.2303   1st Qu.:1.827  
+# Median :0.2339   Median :1.833  
+# Mean   :0.2342   Mean   :1.833  
+# 3rd Qu.:0.2379   3rd Qu.:1.838  
+# Max.   :0.2525   Max.   :1.862  
+
+#not so similar
+clust_coef_dir(macaque)
+#[1] 0.5501073 larger than expected
+mean_distance(macaque)
+#[1] 2.148485 #also larger
+#evidence for small-world behavior in this network is not clear
+#better null model??????????
