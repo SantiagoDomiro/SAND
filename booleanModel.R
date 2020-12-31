@@ -56,12 +56,8 @@ g=plotPBNTransitions(sim,plotIt=F)#igraph
 basinsProb=components(g)$membership
 table(basinsProb)
 # 1  2  3  4  5  6  7  8 
-#64 64 64 64 64 64 64 64
-#same number of attractors & size of basins
-#png("Downloads/ZEB1attrProbabilistic.png")
-plot(g,vertex.label=NA,edge.label=NA,
-	vertex.color=basinsProb)
-dev.off()
+#64 64 64 64 64 64 64 64 #same number of attractors & size of basins
+
 #format to plot
 basinsProb=sapply(1:8,function(x) names(which(basinsProb==x)))
 basinsProb=lapply(1:8,function(x) 
@@ -69,18 +65,40 @@ basinsProb=lapply(1:8,function(x)
 #compare to non-probabilistic basins
 sapply(1:8,function(x) sum(apply(basinsProb[[x]],2,paste,collapse="")
 	%in%apply(temp[[x]],2,paste,collapse="")))
-#[1] 64 64 64 64 64 64 64 64
+#[1] 64 64 64 64 64 64 64 64#same states per basin
 #pdf("Downloads/zeb1BasinsProba.pdf")
 #lapply(1:8,function(x) heatmap(basins[[x]],Rowv=NA,scale="n",
 #	col=c("white","black"),Colv=NA,labCol=NA))
 #dev.off()
-#but attractores are not the same????
-lapply(1:8,function(x) 
-	markovSimulation(zebProb,
-		startStates=basins[[x]][
-		which(basins[[x]]$transitionsToAttractor==0),
-		1:9])$reachedStates)
 
+#are attractors the same????
+attrProb=lapply(1:8,function(x) 
+	markovSimulation(zebProb,
+		startStates=list(basins[[x]][
+		which(basins[[x]]$transitionsToAttractor==0),
+		1:9]))$reachedStates)
+#for states graph
+temp=do.call(rbind,lapply(1:8,function(x) 
+	cbind(paste(basins[[x]][basins[[x]]$transitionsToAttractor==0,
+		1:9],collapse=""),apply(attrProb[[x]][,1:9],1,paste,
+		collapse=""),attrProb[[x]][,10])))
+g=graph.edgelist(temp[,1:2])
+E(g)$weight=as.numeric(temp[,3])
+V(g)$type=substr(V(g)$name,5,6)%in%c("10","01","11")
+#plot all together
+png("Downloads/zeb1BasinsProba.png")
+plot(g,edge.width=E(g)$weight*50,
+	vertex.color=c("cornflowerblue","tomato")[as.factor(V(g)$type)],
+	vertex.label.color="black",layout=layout.spring)
+dev.off()
+#plot per attractor
+pdf("Downloads/zeb1BasinsProba.pdf")
+lapply(unique(temp[,1]),function(x) 
+	plot(induced_subgraph(g,neighbors(g,x)),
+	 edge.width=E(g)$weight*20,
+	 vertex.color=c("cornflowerblue","tomato")[as.factor(V(g)$type)],
+	 vertex.label.color="black",layout=layout.circle))
+dev.off()
 
 #possible follwing steps
 #1 strong vs weak basins of atraction (for assync)
