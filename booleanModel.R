@@ -9,7 +9,7 @@ zebOR<-loadNetwork("Downloads/ZEB1.txt")#OR regulators
 
 #get all attractors
 attrAND <- getAttractors(zebAND)
-print(attrAND, activeOnly=TRUE)
+#print(attrAND, activeOnly=TRUE)
 #recover all states in cancer basins
 basins=lapply(1:8,function(x) 
 	as.data.frame(getBasinOfAttraction(attrAND,x)))
@@ -72,32 +72,15 @@ sapply(1:8,function(x) sum(apply(basinsProb[[x]],2,paste,collapse="")
 #dev.off()
 
 #are attractors the same????
-attrProb=lapply(1:8,function(x) 
-	markovSimulation(zebProb,
-		startStates=list(basins[[x]][
-		which(basins[[x]]$transitionsToAttractor==0),
-		1:9]))$reachedStates)
-#for states graph
-temp=do.call(rbind,lapply(1:8,function(x) 
-	cbind(paste(basins[[x]][basins[[x]]$transitionsToAttractor==0,
-		1:9],collapse=""),apply(attrProb[[x]][,1:9],1,paste,
-		collapse=""),attrProb[[x]][,10])))
-g=graph.edgelist(temp[,1:2])
-E(g)$weight=as.numeric(temp[,3])
 V(g)$type=substr(V(g)$name,5,6)%in%c("10","01","11")
-#plot all together
-png("Downloads/zeb1BasinsProba.png")
-plot(g,edge.width=E(g)$weight*50,
-	vertex.color=c("cornflowerblue","tomato")[as.factor(V(g)$type)],
-	vertex.label.color="black",layout=layout.spring)
-dev.off()
 #plot per attractor
 pdf("Downloads/zeb1BasinsProba.pdf")
-lapply(unique(temp[,1]),function(x) 
-	plot(induced_subgraph(g,neighbors(g,x)),
-	 edge.width=E(g)$weight*20,
-	 vertex.color=c("cornflowerblue","tomato")[as.factor(V(g)$type)],
-	 vertex.label.color="black",layout=layout.circle))
+lapply(1:8,function(x) {p=induced_subgraph(g,neighbors(g,
+	paste(basins[[x]][basins[[x]]$transitionsToAttractor==0,1:9],
+	collapse="")));
+	plot(p,vertex.color=c("cornflowerblue","tomato")[
+		as.factor(V(p)$type)],edge.width=as.numeric(E(p)$label)*10,
+		vertex.label.color="black",edge.label.color="black")})
 dev.off()
 
 #possible follwing steps
